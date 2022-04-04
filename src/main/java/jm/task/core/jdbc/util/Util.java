@@ -20,10 +20,8 @@ public class Util {
             e.printStackTrace();
         }
         try {
-            connect = DriverManager.getConnection(properties.getProperty("url"),
+            return connect = DriverManager.getConnection(properties.getProperty("url"),
                     properties.getProperty("username"),properties.getProperty("password"));
-            connect.setAutoCommit(false);
-            return connect;
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }

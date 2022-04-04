@@ -3,14 +3,16 @@ package jm.task.core.jdbc.dao;
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UserDaoJDBCImpl implements UserDao {
 
     private static Connection connection = Util.getMySQLConnection();
-
 
     public UserDaoJDBCImpl() {
 
@@ -19,17 +21,9 @@ public class UserDaoJDBCImpl implements UserDao {
     public void createUsersTable() {
         try {
             Statement statement = connection.createStatement();
-            String SQL = "CREATE TABLE IF NOT EXISTS users ( id BIGINT auto_increment, constraint primary key (id), name VARCHAR(255), lastname VARCHAR(255), age TINYINT);";
+            String SQL = "CREATE TABLE IF NOT EXISTS users ( id BIGINT, name VARCHAR(255), lastname VARCHAR(255), age TINYINT);";
             statement.executeUpdate(SQL);
-            connection.commit();
         } catch (SQLException throwables) {
-            try {
-                if (connection != null) {
-                    connection.rollback();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
     }
 
@@ -38,59 +32,31 @@ public class UserDaoJDBCImpl implements UserDao {
             Statement statement = connection.createStatement();
             String SQL = "DROP TABLE IF EXISTS users;";
             statement.executeUpdate(SQL);
-            connection.commit();
         } catch (SQLException throwables) {
-            try {
-                if (connection != null) {
-                    connection.rollback();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
     }
 
     public void saveUser(String name, String lastName, byte age) {
 
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO users (name, lastname, age) VALUES (?,?,?)");
-
-            preparedStatement.setString(1,name);
-            preparedStatement.setString(2,lastName);
-            preparedStatement.setByte(3,age);
-
-            preparedStatement.executeUpdate();
-            connection.commit();
+            Statement statement = connection.createStatement();
+            String SQL = "INSERT users(name, lastname, age) values ('"+ name +"', '" + lastName + "'," + age + ")";
+            statement.executeUpdate(SQL);
             System.out.println("User с именем – " +name + " добавлен в базу данных");
         } catch (SQLException throwables) {
-            try {
-                if (connection != null) {
-                    connection.rollback();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            throwables.printStackTrace();
         }
 
     }
 
     public void removeUserById(long id) {
-
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM users WHERE id = ?");
-            preparedStatement.setLong(1,id);
-            preparedStatement.executeUpdate();
-            connection.commit();
+            Statement statement = connection.createStatement();
+            String SQL = "DELETE FROM users WHERE id =" + id +";";
+            statement.executeUpdate(SQL);
         } catch (SQLException throwables) {
-            try {
-                if (connection != null) {
-                    connection.rollback();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            throwables.printStackTrace();
         }
-
     }
 
     public List<User> getAllUsers() {
@@ -113,7 +79,6 @@ public class UserDaoJDBCImpl implements UserDao {
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-
         return userList;
     }
 
@@ -122,15 +87,8 @@ public class UserDaoJDBCImpl implements UserDao {
             Statement statement = connection.createStatement();
             String SQL = "DELETE FROM users;";
             statement.executeUpdate(SQL);
-            connection.commit();
         } catch (SQLException throwables) {
-            try {
-                if (connection != null) {
-                    connection.rollback();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            throwables.printStackTrace();
         }
     }
 }
