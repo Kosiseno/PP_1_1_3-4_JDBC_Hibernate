@@ -36,23 +36,11 @@ public class Util {
             configuration.addAnnotatedClass(User.class);
             ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
             sessionFactory = configuration.buildSessionFactory(serviceRegistry);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
         return sessionFactory;
-    }
-
-    public static SessionFactory buildSessionFactory() {
-        try {
-            File file = new File("src/main/java/jm/task/core/jdbc/resources/hibernate.properties");
-            StandardServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
-                    .loadProperties(file).build();
-            Metadata metadata = new MetadataSources(serviceRegistry).getMetadataBuilder().build();
-            return metadata.getSessionFactoryBuilder().build();
-        } catch (HibernateException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
 
